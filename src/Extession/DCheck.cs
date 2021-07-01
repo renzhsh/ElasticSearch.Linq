@@ -1,5 +1,4 @@
-﻿using ElasticSearch.Linq.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -65,7 +64,7 @@ namespace ElasticSearch.Linq
         /// <exception cref="ArgumentNullException"></exception>
         public static void NotNull<T>(T value, string paramName)
         {
-            Require<ArgumentNullException>(value != null, string.Format(Resources.ParameterCheck_NotNull, paramName));
+            Require<ArgumentNullException>(value != null, string.Format("参数“{0}”不能为空引用。", paramName));
         }
 
         /// <summary>
@@ -77,9 +76,9 @@ namespace ElasticSearch.Linq
         /// <exception cref="ArgumentException"></exception>
         public static void NotNullOrEmpty(string value, string paramName)
         {
-            Require<ArgumentException>(!string.IsNullOrEmpty(value), string.Format(Resources.ParameterCheck_NotNullOrEmpty_String, paramName));
+            Require<ArgumentException>(!string.IsNullOrEmpty(value), string.Format("参数“{0}”不能为空引用或空字符串。", paramName));
         }
-        
+
         /// <summary>
         /// 检查参数必须小于[或可等于，参数<paramref name="canEqual"/>]指定值，否则抛出<see cref="ArgumentOutOfRangeException"/>异常。
         /// </summary>
@@ -92,7 +91,7 @@ namespace ElasticSearch.Linq
         public static void LessThan<T>(T value, string paramName, T target, bool canEqual = false) where T : IComparable<T>
         {
             bool flag = canEqual ? value.CompareTo(target) <= 0 : value.CompareTo(target) < 0;
-            string format = canEqual ? Resources.ParameterCheck_NotLessThanOrEqual : Resources.ParameterCheck_NotLessThan;
+            string format = canEqual ? "参数“{0}”的值必须小于或等于“{1}”。" : "参数“{0}”的值必须小于“{1}”。";
             Require<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
         }
 
@@ -108,7 +107,7 @@ namespace ElasticSearch.Linq
         public static void GreaterThan<T>(T value, string paramName, T target, bool canEqual = false) where T : IComparable<T>
         {
             bool flag = canEqual ? value.CompareTo(target) >= 0 : value.CompareTo(target) > 0;
-            string format = canEqual ? Resources.ParameterCheck_NotGreaterThanOrEqual : Resources.ParameterCheck_NotGreaterThan;
+            string format = canEqual ? "参数“{0}”的值必须大于或等于“{1}”。" : "参数“{0}”的值必须大于“{1}”。";
             Require<ArgumentOutOfRangeException>(flag, string.Format(format, paramName, target));
         }
 
@@ -128,14 +127,14 @@ namespace ElasticSearch.Linq
         {
             bool flag = startEqual ? value.CompareTo(start) >= 0 : value.CompareTo(start) > 0;
             string message = startEqual
-                ? string.Format(Resources.ParameterCheck_Between, paramName, start, end)
-                : string.Format(Resources.ParameterCheck_BetweenNotEqual, paramName, start, end, start);
+                ? string.Format("参数“{0}”的值必须在“{1}”与“{2}”之间。", paramName, start, end)
+                : string.Format("参数“{0}”的值必须在“{1}”与“{2}”之间，且不能等于“{3}”。", paramName, start, end, start);
             Require<ArgumentOutOfRangeException>(flag, message);
 
             flag = endEqual ? value.CompareTo(end) <= 0 : value.CompareTo(end) < 0;
             message = endEqual
-                ? string.Format(Resources.ParameterCheck_Between, paramName, start, end)
-                : string.Format(Resources.ParameterCheck_BetweenNotEqual, paramName, start, end, end);
+                ? string.Format("参数“{0}”的值必须在“{1}”与“{2}”之间。", paramName, start, end)
+                : string.Format("参数“{0}”的值必须在“{1}”与“{2}”之间，且不能等于“{3}”。", paramName, start, end, end);
             Require<ArgumentOutOfRangeException>(flag, message);
         }
     }

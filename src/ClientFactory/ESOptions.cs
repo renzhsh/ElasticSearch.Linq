@@ -20,12 +20,12 @@ namespace ElasticSearch.Linq
         public string DefaultIndex { get; set; }
 
         /// <summary>
-        /// Es版本
+        /// Es版本(默认>=7.0)
         /// </summary>
         public string EsVersion { get; set; }
 
         /// <summary>
-        /// 兼容版本(>=v7.0)
+        /// 兼容版本(>=7.0)
         /// </summary>
         /// <returns></returns>
         public bool IsCompatibleVersion()
