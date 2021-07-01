@@ -11,18 +11,16 @@ namespace ElasticSearch.Linq
 {
     public class ElasticClientFactory : IElasticClientFactory
     {
-        private readonly ESConfig _config;
+        private readonly ESOptions _config;
 
         private readonly IConnectionPool _connectionPool;
 
         private readonly ConcurrentDictionary<string, IElasticClient> dict = new ConcurrentDictionary<string, IElasticClient>();
 
-        public ElasticClientFactory(IOptions<ESConfig> options)
+        public ElasticClientFactory(IOptions<ESOptions> options)
         {
             DCheck.NotNull(options, nameof(options));
             DCheck.NotNull(options.Value, nameof(options));
-
-            ValidateConfig(options.Value);
 
             _config = options.Value;
 
@@ -53,7 +51,7 @@ namespace ElasticSearch.Linq
 
         public string GetIndexName<TDocument>() where TDocument : class
         {
-            if (IsCompatibleVersion())
+            if (_config.IsCompatibleVersion())
             {
                 return $"{_config.DefaultIndex}.{typeof(TDocument).FullName}".Replace(".", "_").ToLower();
             }
@@ -90,35 +88,6 @@ namespace ElasticSearch.Linq
         }
 
         public IElasticLowLevelClient LowLevelClient { get => GetLowLevelClient(_config.DefaultIndex); }
-
-
-        private void ValidateConfig(ESConfig config)
-        {
-            if (config.Urls == null || !config.Urls.Any())
-            {
-                throw new Exception("未指定ElasticSearch的Urls");
-            }
-
-            if (string.IsNullOrEmpty(config.DefaultIndex))
-            {
-                throw new Exception("未指定ElasticSearch的DefaultIndex");
-            }
-        }
-
-        public bool IsCompatibleVersion()
-        {
-            if (string.IsNullOrEmpty(_config.EsVersion)) return true;
-
-            try
-            {
-                var major = _config.EsVersion.Split(".").FirstOrDefault();
-                return int.Parse(major) >= 7;
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
     }
 }

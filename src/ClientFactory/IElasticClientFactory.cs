@@ -23,9 +23,5 @@ namespace ElasticSearch.Linq
         IElasticLowLevelClient GetLowLevelClient(string indexName);
 
         IElasticLowLevelClient LowLevelClient { get; }
-
-        bool IsCompatibleVersion();
-
-
     }
 }

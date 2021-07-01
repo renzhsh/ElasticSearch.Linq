@@ -8,10 +8,29 @@ namespace ElasticSearch.Linq.Extession
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddElasticSearchLinq(this IServiceCollection services, Action<ESConfig> opt)
+        public static IServiceCollection AddElasticSearchLinq(this IServiceCollection services, Action<ESOptions> opt)
         {
+            DCheck.NotNull(services, nameof(services));
+            DCheck.NotNull(opt, nameof(opt));
 
-            services.Configure<ESConfig>(opt);
+            services.AddOptions().Configure(opt);
+
+            var options = services.BuildServiceProvider().GetService<IOptions<ESOptions>>();
+
+            var esConfig = options.Value;
+
+            ESOptions.Validate(esConfig);
+
+            services.AddSingleton<IElasticClientFactory, ElasticClientFactory>();
+            if(esConfig.IsCompatibleVersion())
+            {
+                services.AddScoped<IElasticService, ElasticService>();
+            }
+            else
+            {
+                services.AddScoped<IElasticService, LowElasticService>();
+            }
+
             return services;
         }
     }
